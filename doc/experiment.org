@@ -1,0 +1,64 @@
+#+TITLE: protobuf experimentation with Golang
+
+* Setup
+- Make the directory you are working in and cd to it.
+- In your work dir, get your environment up and running
+  
+  #+name: goenv-setup
+  #+BEGIN_SRC bash
+    export GOROOT=/Users/svanellewee/appz/go-darwin-amd64-bootstrap/
+    export PATH=/Users/svanellewee/.nvm/versions/node/v0.12.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Users/svanellewee/tools/scala-2.11.7/bin:${GOROOT}/bin
+    export GOPATH=$PWD  #/Users/svanellewee/source/golang
+    go version
+  #+END_SRC
+
+- get your protobuf lib and tooling
+  #+BEGIN_SRC bash
+    go get -u -v github.com/golang/protobuf/proto  # to use in go code
+    go get -u -v github.com/golang/protobuf/protoc-gen-go  # to use as a add on for protoc
+  #+END_SRC
+
+* Grab a test protobuf
+  :PROPERTIES:
+  :dir: ..
+  :session: generate-protobuf
+  :END:
+
+  #+CALL: goenv-setup()
+
+  #+RESULTS:
+  : go version go1.7 darwin/amd64
+
+  #+BEGIN_SRC bash :results raw
+    if [ ! -f "test.proto" ]; then
+        echo "Test proto not there, grabbing"
+        wget https://gist.githubusercontent.com/tleyden/95de4bfe34321c79e91b/raw/f8696fe0f1462f377d6bd13c5f20cccfa182578a/test.proto
+    fi
+    echo "Test proto there, moving up to base"
+    mv test.proto ../
+  #+END_SRC
+  
+  #+name: protobuf_example
+  #+BEGIN_EXAMPLE
+    package main;
+
+    enum FOO { X = 17; };
+
+    message Test {
+              required string label = 1;
+              optional int32 type = 2 [default=77];
+              repeated int64 reps = 3;
+              optional group OptionalGroup = 4 {
+                required string RequiredField = 5;
+              }
+    }
+  #+END_EXAMPLE
+
+  #+BEGIN_SRC bash :results raw
+    export PATH=$PATH:$PWD/bin
+    mkdir -p protobufs
+    protoc --go_out=protobufs test.proto
+    [ -f "protobufs/test.pb.go" ] && echo "generated protobuf" || echo "No protobuf generated"
+  #+END_SRC
+
+  
