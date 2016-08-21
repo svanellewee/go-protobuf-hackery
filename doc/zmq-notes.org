@@ -1,0 +1,304 @@
+#+TITLE: ZeroMQ Golang Notes
+
+* Router/Dealer examples
+  :PROPERTIES:
+  :dir: ../
+  :session: zmq-hackery
+  :end:
+
+  #+name: goenv-setup
+  #+BEGIN_SRC bash
+    export GOROOT=/Users/svanellewee/appz/go-darwin-amd64-bootstrap/
+    export PATH=/Users/svanellewee/.nvm/versions/node/v0.12.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Users/svanellewee/tools/scala-2.11.7/bin:${GOROOT}/bin
+    export GOPATH=$PWD  #/Users/svanellewee/source/golang
+    go version
+  #+END_SRC
+
+  #+BEGIN_SRC bash
+    go get github.com/pebbe/zmq4
+  #+END_SRC
+  
+  #+NAME: examples with router or dealer in them..
+  #+BEGIN_SRC bash :results raw
+  cd $GOPATH/src/github.com/pebbe/zmq4/examples/
+  grep -E "DEALER|ROUTER|POLLIN" *go
+  #+END_SRC
+
+  #+RESULTS: examples with router or dealer in them..
+  asyncsrv.go://  Asynchronous client-to-server (DEALER to ROUTER).
+  asyncsrv.go:	client, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  asyncsrv.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:		//  The DEALER socket gives us the reply envelope and message
+  bstarcli.go:	poller.Add(client, zmq.POLLIN)
+  bstarcli.go:				poller.Add(client, zmq.POLLIN)
+  bstarsrv.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  bstarsrv.go:	poller.Add(frontend, zmq.POLLIN)
+  bstarsrv.go:	poller.Add(statesub, zmq.POLLIN)
+  bstarsrv2.go:		bst.Voter("tcp://*:5001", zmq.ROUTER, echo)
+  bstarsrv2.go:		bst.Voter("tcp://*:5002", zmq.ROUTER, echo)
+  clonecli2.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli3.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli3.go:	poller.Add(subscriber, zmq.POLLIN)
+  clonecli4.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli4.go:	poller.Add(subscriber, zmq.POLLIN)
+  clonecli5.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli5.go:	poller.Add(subscriber, zmq.POLLIN)
+  clonesrv2.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv2.go:	poller.Add(pipe, zmq.POLLIN)
+  clonesrv2.go:	poller.Add(snapshot, zmq.POLLIN)
+  clonesrv3.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv3.go:	poller.Add(collector, zmq.POLLIN)
+  clonesrv3.go:	poller.Add(snapshot, zmq.POLLIN)
+  clonesrv4.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv4.go:	poller.Add(collector, zmq.POLLIN)
+  clonesrv4.go:	poller.Add(snapshot, zmq.POLLIN)
+  clonesrv5.go:	srv.snapshot, _ = zmq.NewSocket(zmq.ROUTER)
+  clonesrv5.go:	reactor.AddSocket(srv.snapshot, zmq.POLLIN,
+  clonesrv5.go:	reactor.AddSocket(srv.collector, zmq.POLLIN,
+  clonesrv6.go:		srv.bstar.Voter("tcp://*:5556", zmq.ROUTER, func(soc *zmq.Socket) error { return snapshots(soc, srv) })
+  clonesrv6.go:		srv.bstar.Voter("tcp://*:5566", zmq.ROUTER, func(soc *zmq.Socket) error { return snapshots(soc, srv) })
+  clonesrv6.go:	srv.bstar.Reactor.AddSocket(srv.collector, zmq.POLLIN,
+  clonesrv6.go:	srv.bstar.Reactor.AddSocket(srv.subscriber, zmq.POLLIN,
+  clonesrv6.go:		snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  eagain.go:	mailbox, _ := zmq.NewSocket(zmq.DEALER)
+  fileio1.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio1.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  fileio2.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio2.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  fileio3.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio3.go://  that we set the HWM on the server's ROUTER socket to PIPELINE
+  fileio3.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  flclient1.go:	poller.Add(client, zmq.POLLIN)
+  flclient2.go://  Uses DEALER socket to blast one or more services
+  flclient2.go://  a DEALER socket it uses to talk to the servers, a counter of how many
+  flclient2.go:	socket   *zmq.Socket //  DEALER socket talking to servers
+  flclient2.go:	client.socket, _ = zmq.NewSocket(zmq.DEALER)
+  flclient2.go:	poller.Add(client.socket, zmq.POLLIN)
+  flserver3.go://  Uses an ROUTER/ROUTER socket but just one thread
+  flserver3.go:	server, _ := zmq.NewSocket(zmq.ROUTER)
+  identity.go:	sink, _ := zmq.NewSocket(zmq.ROUTER)
+  identity.go:	anonymous.Send("ROUTER uses a generated UUID", 0)
+  identity.go:	identified.Send("ROUTER socket uses REQ's socket identity", 0)
+  lbbroker.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker.go:	poller1.Add(backend, zmq.POLLIN)
+  lbbroker.go:	poller2.Add(backend, zmq.POLLIN)
+  lbbroker.go:	poller2.Add(frontend, zmq.POLLIN)
+  lbbroker2.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker2.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker2.go:	poller1.Add(backend, zmq.POLLIN)
+  lbbroker2.go:	poller2.Add(backend, zmq.POLLIN)
+  lbbroker2.go:	poller2.Add(frontend, zmq.POLLIN)
+  lbbroker3.go:		lbbroker.reactor.AddSocket(lbbroker.frontend, zmq.POLLIN,
+  lbbroker3.go:	lbbroker.frontend, _ = zmq.NewSocket(zmq.ROUTER)
+  lbbroker3.go:	lbbroker.backend, _ = zmq.NewSocket(zmq.ROUTER)
+  lbbroker3.go:	lbbroker.reactor.AddSocket(lbbroker.backend, zmq.POLLIN,
+  lpclient.go:	poller.Add(client, zmq.POLLIN)
+  lpclient.go:					poller.Add(client, zmq.POLLIN)
+  lvcache.go:	poller.Add(frontend, zmq.POLLIN)
+  lvcache.go:	poller.Add(backend, zmq.POLLIN)
+  mdbroker.go:	broker.socket, err = zmq.NewSocket(zmq.ROUTER)
+  mdbroker.go:	poller.Add(broker.socket, zmq.POLLIN)
+  msgqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  msgqueue.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  mspoller.go:	poller.Add(receiver, zmq.POLLIN)
+  mspoller.go:	poller.Add(subscriber, zmq.POLLIN)
+  mtserver.go:	clients, _ := zmq.NewSocket(zmq.ROUTER)
+  mtserver.go:	workers, _ := zmq.NewSocket(zmq.DEALER)
+  peering1.go:	poller.Add(statefe, zmq.POLLIN)
+  peering2.go:	cloudfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	cloudbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	localfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	localbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	backends.Add(localbe, zmq.POLLIN)
+  peering2.go:	backends.Add(cloudbe, zmq.POLLIN)
+  peering2.go:	frontends.Add(localfe, zmq.POLLIN)
+  peering2.go:	frontends.Add(cloudfe, zmq.POLLIN)
+  peering3.go:	poller.Add(client, zmq.POLLIN)
+  peering3.go:	localfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	localbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	cloudfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	cloudbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	primary.Add(localbe, zmq.POLLIN)
+  peering3.go:	primary.Add(cloudbe, zmq.POLLIN)
+  peering3.go:	primary.Add(statefe, zmq.POLLIN)
+  peering3.go:	primary.Add(monitor, zmq.POLLIN)
+  peering3.go:	secondary1.Add(localfe, zmq.POLLIN)
+  peering3.go:	secondary2.Add(localfe, zmq.POLLIN)
+  peering3.go:	secondary2.Add(cloudfe, zmq.POLLIN)
+  peering3.go:		if sockets[0].Events&zmq.POLLIN != 0 { // 0 == localbe
+  peering3.go:		} else if sockets[1].Events&zmq.POLLIN != 0 { // 1 == cloudbe
+  peering3.go:		if sockets[2].Events&zmq.POLLIN != 0 { // 2 == statefe
+  peering3.go:		if sockets[3].Events&zmq.POLLIN != 0 { // 3 == monitor
+  peering3.go:			if sockets[0].Events&zmq.POLLIN != 0 { // 0 == localfe
+  1 && sockets[1].Events&zmq.POLLIN != 0 { // 1 == cloudfe
+  ppqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  ppqueue.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  ppqueue.go:	poller1.Add(backend, zmq.POLLIN)
+  ppqueue.go:	poller2.Add(backend, zmq.POLLIN)
+  ppqueue.go:	poller2.Add(frontend, zmq.POLLIN)
+  ppworker.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  ppworker.go:	poller.Add(worker, zmq.POLLIN)
+  rrbroker.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  rrbroker.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  rrbroker.go:	poller.Add(frontend, zmq.POLLIN)
+  rrbroker.go:	poller.Add(backend, zmq.POLLIN)
+  rtdealer.go://  ROUTER-to-DEALER example.
+  rtdealer.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  rtdealer.go:	broker, _ := zmq.NewSocket(zmq.ROUTER)
+  rtreq.go://  ROUTER-to-REQ example.
+  rtreq.go:	broker, _ := zmq.NewSocket(zmq.ROUTER)
+  spqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  spqueue.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  spqueue.go:	poller1.Add(backend, zmq.POLLIN)
+  spqueue.go:	poller2.Add(backend, zmq.POLLIN)
+  spqueue.go:	poller2.Add(frontend, zmq.POLLIN)
+  taskwork2.go:	poller.Add(receiver, zmq.POLLIN)
+  taskwork2.go:	poller.Add(controller, zmq.POLLIN)
+  tripping.go:	client, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	frontend, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go://  Asynchronous client-to-server (DEALER to ROUTER).
+  asyncsrv.go:	client, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  asyncsrv.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  asyncsrv.go:		//  The DEALER socket gives us the reply envelope and message
+  bstarsrv.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  bstarsrv2.go:		bst.Voter("tcp://*:5001", zmq.ROUTER, echo)
+  bstarsrv2.go:		bst.Voter("tcp://*:5002", zmq.ROUTER, echo)
+  clonecli2.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli3.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli4.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonecli5.go:	snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  clonesrv2.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv3.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv4.go:	snapshot, _ := zmq.NewSocket(zmq.ROUTER)
+  clonesrv5.go:	srv.snapshot, _ = zmq.NewSocket(zmq.ROUTER)
+  clonesrv6.go:		srv.bstar.Voter("tcp://*:5556", zmq.ROUTER, func(soc *zmq.Socket) error { return snapshots(soc, srv) })
+  clonesrv6.go:		srv.bstar.Voter("tcp://*:5566", zmq.ROUTER, func(soc *zmq.Socket) error { return snapshots(soc, srv) })
+  clonesrv6.go:		snapshot, _ := zmq.NewSocket(zmq.DEALER)
+  eagain.go:	mailbox, _ := zmq.NewSocket(zmq.DEALER)
+  fileio1.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio1.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  fileio2.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio2.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  fileio3.go:	dealer, _ := zmq.NewSocket(zmq.DEALER)
+  fileio3.go://  that we set the HWM on the server's ROUTER socket to PIPELINE
+  fileio3.go:	router, _ := zmq.NewSocket(zmq.ROUTER)
+  flclient2.go://  Uses DEALER socket to blast one or more services
+  flclient2.go://  a DEALER socket it uses to talk to the servers, a counter of how many
+  flclient2.go:	socket   *zmq.Socket //  DEALER socket talking to servers
+  flclient2.go:	client.socket, _ = zmq.NewSocket(zmq.DEALER)
+  flserver3.go://  Uses an ROUTER/ROUTER socket but just one thread
+  flserver3.go:	server, _ := zmq.NewSocket(zmq.ROUTER)
+  identity.go:	sink, _ := zmq.NewSocket(zmq.ROUTER)
+  identity.go:	anonymous.Send("ROUTER uses a generated UUID", 0)
+  identity.go:	identified.Send("ROUTER socket uses REQ's socket identity", 0)
+  lbbroker.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker2.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker2.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  lbbroker3.go:	lbbroker.frontend, _ = zmq.NewSocket(zmq.ROUTER)
+  lbbroker3.go:	lbbroker.backend, _ = zmq.NewSocket(zmq.ROUTER)
+  mdbroker.go:	broker.socket, err = zmq.NewSocket(zmq.ROUTER)
+  msgqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  msgqueue.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  mtserver.go:	clients, _ := zmq.NewSocket(zmq.ROUTER)
+  mtserver.go:	workers, _ := zmq.NewSocket(zmq.DEALER)
+  peering2.go:	cloudfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	cloudbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	localfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering2.go:	localbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	localfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	localbe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	cloudfe, _ := zmq.NewSocket(zmq.ROUTER)
+  peering3.go:	cloudbe, _ := zmq.NewSocket(zmq.ROUTER)
+  ppqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  ppqueue.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  ppworker.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  rrbroker.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  rrbroker.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+  rtdealer.go://  ROUTER-to-DEALER example.
+  rtdealer.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  rtdealer.go:	broker, _ := zmq.NewSocket(zmq.ROUTER)
+  rtreq.go://  ROUTER-to-REQ example.
+  rtreq.go:	broker, _ := zmq.NewSocket(zmq.ROUTER)
+  spqueue.go:	frontend, _ := zmq.NewSocket(zmq.ROUTER)
+  spqueue.go:	backend, _ := zmq.NewSocket(zmq.ROUTER)
+  tripping.go:	client, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	worker, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	frontend, _ := zmq.NewSocket(zmq.DEALER)
+  tripping.go:	backend, _ := zmq.NewSocket(zmq.DEALER)
+
+  #+BEGIN_SRC bash :results raw
+  cat $GOPATH/src/github.com/pebbe/zmq4/examples/asyncsrv.go
+  #+END_SRC
+
+  #+BEGIN_SRC go
+    package main
+
+    import (
+            "fmt"
+            zmq "github.com/pebbe/zmq4"
+            "os"
+    )
+    
+    // Server Program
+    func serverCode(responder *zmq.Socket) {
+            msg, _ := responder.Recv(0)
+            fmt.Println("Server RX", msg)
+            result := fmt.Sprintf("CHANGED %s", msg)
+            responder.Send(result, 0)
+    }
+
+    func runServer(doSomething func(*zmq.Socket)) {
+            responder, _ := zmq.NewSocket(zmq.REP)
+            responder.Bind("tcp://*:5555")
+            defer responder.Close()
+
+            for {
+                    doSomething(responder)
+            }
+    }
+
+    // Client Program
+    func clientCode(requester *zmq.Socket) {
+            for i := 0; i< 10; i++ {
+                    msg := fmt.Sprintf(">>%d>>", i)
+                    requester.Send(msg, 0)
+                    retval, _ := requester.Recv(0)
+                    fmt.Println("Getting ", retval)
+            }
+    }
+
+    func runClient(doSomething func(*zmq.Socket)){
+            requester, _ := zmq.NewSocket(zmq.REQ)
+            requester.Connect("tcp://localhost:5555")
+            defer requester.Close()
+            doSomething(requester)
+    }
+
+    /*
+    HOw about we create a new protobuf, and send it via REQ REP?
+    */
+    func main() {
+            arguments := os.Args[1:]
+
+            if len(arguments) > 0 {
+                    runServer(serverCode)
+                    return
+            }
+            runClient(clientCode)
+        
+    }
+
+
+  #+END_SRC
+
+
+* References
+- [[https://godoc.org/github.com/pebbe/zmq4][Golang ZMQ4]]
